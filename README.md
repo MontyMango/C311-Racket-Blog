@@ -15,5 +15,5 @@ Each team will write a Racket program as described in the assigned projects. The
 On the day of team presentations, each team will have 25 minutes to demonstrate your program and give your presentation. You must submit both the program and the presentation by the Tuesday before
 
 
+> Chapter 11 in the link provides the answers to ALL features
 > link: https://docs.racket-lang.org/continue/index.html
-
