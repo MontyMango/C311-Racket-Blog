@@ -16,4 +16,4 @@ On the day of team presentations, each team will have 25 minutes to demonstrate 
 
 
 > Chapter 11 in the link provides the answers to ALL features
-> link: https://docs.racket-lang.org/continue/index.html
+link: https://docs.racket-lang.org/continue/index.html
