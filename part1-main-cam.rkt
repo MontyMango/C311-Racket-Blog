@@ -12,9 +12,6 @@
 ; | Structures |
 ; ==============
 ; This section contains the "building blocks" of the website
-
-; post
-; DESCRIPTION:  
 (struct post (title body))
 
 
@@ -23,7 +20,6 @@
 ; ====================
 ; This sections *mostly* contain the text that will show up on the blog.
 ; Headers and the title can be found in the rendering portion of this code.
-
 (define BLOG
   (list (post "How are you doing today?" "Comment below on how your doing today!")
         (post "Welcome to the new blog!" "This is a brand new post!")))
@@ -36,8 +32,7 @@
 ; This section contains where the website always begins to get its content from
 
 ; start
-; DESCRIPTION: This program starts the web server locally,
-; and is always required.
+; DESCRIPTION: This program starts the web server locally,and is always required.
 (define (start request)
   (render-blog-page BLOG request))
 
@@ -75,17 +70,11 @@
   ; This consumes a response-gathering function and gives it an embed/url function.
   ; This transforms and builds functions into special URLs with links.
   (send/suspend/dispatch response-generator)
-  
-  ; "What makes these URLs special is this:
-  ; when a web browser visits one of them, our web application restarts,
-  ; not from start, but from the handler that we associate with the URL.
-  ; In the handler phase-1, the use of embed/url associates the link with
-  ; the handler phase-2, and vice versa."
 )
 
-; ====================================================
-; | HTML Rendering Helper Functions (From section 4) |
-; ====================================================
+; ===================================
+; | HTML Rendering Helper Functions |
+; ===================================
 ; This section contains the functions that renders the racket code into HTML.
 ; (Side note: xexper consumes requests and produces HTML code from them)
 
@@ -102,16 +91,4 @@
   `(div ((class "posts"))
         ,@(map render-post blog-posts)))
        ; ^ The @ here splices the list of xexpr
-
-; render-as-itemized-list
-; DESCRIPTION: Takes a list and renders it as an unordered list (or ul in HTML).
-;(define (render-as-itemized-list fragments)
-;  `(ul ,@(map render-as-item fragments)))
-      ; ^ The @ here splices the list of xexpr 
-
-; render-as-item
-; DESCRIPTION: Takes an xexper and renders it as a list item (or ol in HTML)
-;(define (render-as-item a-fragment)
-;  `(li ,a-fragment))
-
 ; ==============================================================
