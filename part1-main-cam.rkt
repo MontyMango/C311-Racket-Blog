@@ -70,24 +70,7 @@
 
         ; Blog post rendering
         ,(render-posts blog-posts)
-
-        ; Blog post submission box
-        (b "Input your title and message into the boxes below:")
-        (form
-         ((action
-           ,(embed/url insert-post-handler)))
-         (input ((name "title")))
-         (input ((name "body")))
-         (input ((type "submit"))))
         ))))
-
-  ; insert-post-handler
-  ; DESCRIPTION: This handles inserting posts into the blog
-  (define (insert-post-handler request)
-    (render-blog-page
-     (cons (parse-post (request-bindings request))
-           blog-posts)
-     request))
 
   ; This consumes a response-gathering function and gives it an embed/url function.
   ; This transforms and builds functions into special URLs with links.
@@ -98,25 +81,6 @@
   ; not from start, but from the handler that we associate with the URL.
   ; In the handler phase-1, the use of embed/url associates the link with
   ; the handler phase-2, and vice versa."
-)
-
-
-; ======================
-; | Request inspection |
-; ======================
-
-; can-parse-post?
-; DESCRIPTION: Checks to see if the POST can be parsed
-;(define (can-parse-post? binding)
-;  (and (exists-binding? 'title binding)
-;       (exists-binding? 'body binding))
-;)
-
-; parse-post
-; DESCRIPTION: Takes a post binding and parses it, creating a new post.
-(define (parse-post bindings)
-  (post (extract-binding/single 'title bindings)
-       (extract-binding/single 'body bindings))
 )
 
 ; ====================================================
