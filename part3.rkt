@@ -113,3 +113,5 @@
 (define (render-posts)
   `(div ((class "posts"))
         ,@(map render-post (blog-posts BLOG))))
+        ; ^ The @ here splices the list of xexpr
+; ==============================================================
