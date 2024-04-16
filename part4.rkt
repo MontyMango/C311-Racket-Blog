@@ -1,7 +1,16 @@
+; Group 3: Angel Perez
+; Click run and the web server will start automatically with the website popping up automatically
+; Reference: https://docs.racket-lang.org/continue/index.html
 #lang web-server/insta
+
+; WHEN EDITING CODE BE SURE TO USE THE
+; ` (back-quote) INSTEAD OF ' (single-quote) if you're editing HTML code
+; ' (single-quotes) if you're checking an HTML variable.
  
-; A blog is a (blog posts)
-; where posts is a (listof post)
+; ==============
+; | Structures |
+; ==============
+; This section contains the "building blocks" of the website
 (struct blog (posts) #:mutable)
  
 ; and post is a (post title body comments)
@@ -9,8 +18,12 @@
 ; and comments is a (listof string)
 (struct post (title body comments) #:mutable)
  
-; BLOG: blog
-; The initial BLOG.
+; ====================
+; | Content of Blog  |
+; ====================
+; This sections *mostly* contain the text that will show up on the blog.
+; Headers and the title can be found in the rendering portion of this code.
+
 (define BLOG
   (blog
    (list (post "Second Post"
@@ -35,23 +48,44 @@
    a-post
    (append (post-comments a-post) (list a-comment))))
  
-; start: request -> doesn't return
-; Consumes a request, and produces a page that displays
-; all of the web content.
+; ====================
+; | main() or start |
+; ====================
+; This section contains where the website always begins to get its content from
+
+; start
+; DESCRIPTION: This program starts the web server locally, and is always required.
+
 (define (start request)
   (render-blog-page request))
  
-; render-blog-page: request -> doesn't return
-; Produces an HTML page of the content of the
-; BLOG.
+; ==============================
+; | HTML structure of the blog |
+; ==============================
+; This section contains the structure of the blog.
+; (Side note: xexper consumes requests and produces HTML code from them)
+
+; render-blog-page
+; DESCRIPTION: This renders the title and top of the blog, and the requests
+
 (define (render-blog-page request)
+
+; response-generator
+  ; DESCRIPTION: 
   (define (response-generator embed/url)
     (response/xexpr
-     `(html (head (title "My Blog"))
+
+     ; Header
+     `(html (head (title "Group 5's Blog"))
+
+            ; Body
             (body
+            ; HTML Title
              (h1 "My Blog")
+            ; Blog post rendering
              ,(render-posts embed/url)
              (form ((action
+            ; Blog post submission box
                      ,(embed/url insert-post-handler)))
                    (input ((name "title")))
                    (input ((name "body")))
@@ -63,14 +97,19 @@
     (post (extract-binding/single 'title bindings)
           (extract-binding/single 'body bindings)
           (list)))
- 
+
+  ; insert-post-handler
+  ; DESCRIPTION: This handles inserting posts into the blog
   (define (insert-post-handler request)
     (blog-insert-post!
      BLOG (parse-post (request-bindings request)))
     (render-blog-page request))
+
+  ; This consumes a response-gathering function and gives it an embed/url function.
+  ; This transforms and builds functions into special URLs with links.
   (send/suspend/dispatch response-generator))
  
-; render-post-detail-page: post request -> doesn't return
+; Function to render the detailed page for a single post.
 ; Consumes a post and request, and produces a detail page
 ; of the post. The user will be able to insert new comments.
 (define (render-post-detail-page a-post request)
@@ -87,10 +126,11 @@
                      ,(embed/url insert-comment-handler)))
                    (input ((name "comment")))
                    (input ((type "submit"))))))))
- 
+ ; Parse comment data from request bindings.
   (define (parse-comment bindings)
     (extract-binding/single 'comment bindings))
- 
+
+ ; This handler is responsible for inserting a new comment.
   (define (insert-comment-handler a-request)
     (post-insert-comment!
      a-post (parse-comment (request-bindings a-request)))
@@ -98,8 +138,7 @@
   (send/suspend/dispatch response-generator))
  
  
-; render-post: post (handler -> string) -> xexpr
-; Consumes a post, produces an xexpr fragment of the post.
+; Function to render a singular post.
 ; The fragment contains a link to show a detailed view of the post.
 (define (render-post a-post embed/url)
   (define (view-post-handler request)
@@ -111,23 +150,17 @@
         (div ,(number->string (length (post-comments a-post)))
              " comment(s)")))
  
-; render-posts: (handler -> string) -> xexpr
-; Consumes a embed/url, and produces an xexpr fragment
-; of all its posts.
+; This function allows all posts to be rendered
 (define (render-posts embed/url)
   (define (render-post/embed/url a-post)
     (render-post a-post embed/url))
   `(div ((class "posts"))
         ,@(map render-post/embed/url (blog-posts BLOG))))
  
-; render-as-itemized-list: (listof xexpr) -> xexpr
-; Consumes a list of items, and produces a rendering as
-; an unorderered list.
+; Helper function to render a list as an unordered list.
 (define (render-as-itemized-list fragments)
   `(ul ,@(map render-as-item fragments)))
  
-; render-as-item: xexpr -> xexpr
-; Consumes an xexpr, and produces a rendering
-; as a list item.
+; Helper function to render an item as a list item.
 (define (render-as-item a-fragment)
   `(li ,a-fragment))
