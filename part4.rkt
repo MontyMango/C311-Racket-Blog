@@ -1,4 +1,4 @@
-; Group 3: Angel Perez
+; Group 5: Angel Perez
 ; Click run and the web server will start automatically with the website popping up automatically
 ; Reference: https://docs.racket-lang.org/continue/index.html
 #lang web-server/insta
@@ -26,11 +26,11 @@
 
 (define BLOG
   (blog
-   (list (post "Second Post"
-               "This is another post"
+   (list (post "Hello Again!"
+               "This is another message test."
                (list))
-         (post "First Post"
-               "This is my first post"
+         (post "Our First Post!"
+               "This is our first post message, hello!"
                (list "First comment!")))))
  
 ; blog-insert-post!: blog post -> void
@@ -81,9 +81,10 @@
             ; Body
             (body
             ; HTML Title
-             (h1 "My Blog")
+             (h1 "Group 5's Blog")
             ; Blog post rendering
              ,(render-posts embed/url)
+             (b "Input your title and message into the boxes below:")
              (form ((action
             ; Blog post submission box
                      ,(embed/url insert-post-handler)))
@@ -144,9 +145,11 @@
   (define (view-post-handler request)
     (render-post-detail-page a-post request))
   `(div ((class "post"))
+        ;Use of hyperlink that you can click
         (a ((href ,(embed/url view-post-handler)))
            ,(post-title a-post))
         (p ,(post-body a-post))
+        ;Allows for the user to see how many comments there are on a post
         (div ,(number->string (length (post-comments a-post)))
              " comment(s)")))
  

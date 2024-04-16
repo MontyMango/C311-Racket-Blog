@@ -1,4 +1,4 @@
-; Group 3: Angel Perez
+; Group 5: Angel Perez
 ; Click run and the web server will start automatically with the website popping up automatically
 ; Reference: https://docs.racket-lang.org/continue/index.html
 #lang web-server/insta
@@ -72,12 +72,13 @@
   ; Body
             (body
   ; HTML Title
-             (h1 "My Blog")
+             (h1 "Group 5's Blog")
 
   ; Blog post rendering
              ,(render-posts)
 
   ; Blog post submission box
+             (b "Input your title and message into the boxes below:")
              (form ((action
                      ,(embed/url insert-post-handler)))
                    (input ((name "title")))
