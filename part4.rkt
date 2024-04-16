@@ -1,4 +1,5 @@
 #lang web-server/insta
+ 
 ; A blog is a (blog posts)
 ; where posts is a (listof post)
 (struct blog (posts) #:mutable)
@@ -27,7 +28,7 @@
  
  
 ; post-insert-comment!: post string -> void
-; Consumes a post and a comment string.  As a side-efect, 
+; Consumes a post and a comment string.  As a side-effect, 
 ; adds the comment to the bottom of the post's list of comments.
 (define (post-insert-comment! a-post a-comment)
   (set-post-comments!
@@ -35,7 +36,7 @@
    (append (post-comments a-post) (list a-comment))))
  
 ; start: request -> doesn't return
-; Consumes a request and produces a page that displays
+; Consumes a request, and produces a page that displays
 ; all of the web content.
 (define (start request)
   (render-blog-page request))
@@ -70,9 +71,8 @@
   (send/suspend/dispatch response-generator))
  
 ; render-post-detail-page: post request -> doesn't return
-; Consumes a post and produces a detail page of the post.
-; The user will be able to either insert new comments
-; or go back to render-blog-page.
+; Consumes a post and request, and produces a detail page
+; of the post. The user will be able to insert new comments.
 (define (render-post-detail-page a-post request)
   (define (response-generator embed/url)
     (response/xexpr
@@ -86,51 +86,17 @@
              (form ((action
                      ,(embed/url insert-comment-handler)))
                    (input ((name "comment")))
-                   (input ((type "submit"))))
-             (a ((href ,(embed/url back-handler)))
-                "Back to the blog")))))
+                   (input ((type "submit"))))))))
  
   (define (parse-comment bindings)
     (extract-binding/single 'comment bindings))
  
-  (define (insert-comment-handler request)
-    (render-confirm-add-comment-page
-     (parse-comment (request-bindings request))
-     a-post
-     request))
- 
-  (define (back-handler request)
-    (render-blog-page request))
+  (define (insert-comment-handler a-request)
+    (post-insert-comment!
+     a-post (parse-comment (request-bindings a-request)))
+    (render-post-detail-page a-post a-request))
   (send/suspend/dispatch response-generator))
  
-; render-confirm-add-comment-page :
-; comment post request -> doesn't return
-; Consumes a comment that we intend to add to a post, as well
-; as the request. If the user follows through, adds a comment 
-; and goes back to the display page. Otherwise, goes back to 
-; the detail page of the post.
-(define (render-confirm-add-comment-page a-comment a-post request)
-  (define (response-generator embed/url)
-    (response/xexpr
-     `(html (head (title "Add a Comment"))
-            (body
-             (h1 "Add a Comment")
-             "The comment: " (div (p ,a-comment))
-             "will be added to "
-             (div ,(post-title a-post))
- 
-             (p (a ((href ,(embed/url yes-handler)))
-                   "Yes, add the comment."))
-             (p (a ((href ,(embed/url cancel-handler)))
-                   "No, I changed my mind!"))))))
- 
-  (define (yes-handler request)
-    (post-insert-comment! a-post a-comment)
-    (render-post-detail-page a-post request))
- 
-  (define (cancel-handler request)
-    (render-post-detail-page a-post request))
-  (send/suspend/dispatch response-generator))
  
 ; render-post: post (handler -> string) -> xexpr
 ; Consumes a post, produces an xexpr fragment of the post.
@@ -146,7 +112,7 @@
              " comment(s)")))
  
 ; render-posts: (handler -> string) -> xexpr
-; Consumes a embed/url, produces an xexpr fragment
+; Consumes a embed/url, and produces an xexpr fragment
 ; of all its posts.
 (define (render-posts embed/url)
   (define (render-post/embed/url a-post)
