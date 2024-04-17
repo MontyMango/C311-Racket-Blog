@@ -7,16 +7,15 @@
 ; ` (back-quote) INSTEAD OF ' (single-quote) if you're editing HTML code
 ; ' (single-quotes) if you're checking an HTML variable.
 
-; A blog is a (blog posts)
-; where posts is a (listof post)
-(struct blog (posts) #:mutable)
- 
 ; ==============
 ; | Structures |
 ; ==============
 ; This section contains the "building blocks" of the website
 (struct post (title body))
+
+(struct blog (posts) #:mutable)
  
+
 ; ====================
 ; | Content of Blog  |
 ; ====================
@@ -27,12 +26,7 @@
   (blog
    (list (post "Second Post" "This is another post")
          (post "First Post" "This is my first post"))))
- 
-; blog-insert-post!: blog post -> void
-; Consumes a blog and a post, adds the post at the top of the blog.
-(define (blog-insert-post! a-blog a-post)
-  (set-blog-posts! a-blog
-                   (cons a-post (blog-posts a-blog))))
+
  
 ; ====================
 ; | main() or start |
@@ -95,7 +89,14 @@
   ; This consumes a response-gathering function and gives it an embed/url function.
   ; This transforms and builds functions into special URLs with links.
   (send/suspend/dispatch response-generator))
- 
+
+; blog-insert-post!
+; DESCRIPTION: Takes the blog and the new post, and adds the new post on the top of the blog.
+(define (blog-insert-post! a-blog a-post)
+  (set-blog-posts! a-blog
+                   (cons a-post (blog-posts a-blog))))
+
+
 ; ===================================
 ; | HTML Rendering Helper Functions |
 ; ===================================
